@@ -2,7 +2,7 @@
 
 
 #include "OverTimeFunctionLibrary.h"
-
+/*
 FTimerHandle UOverTimeFunctionLibrary::StartOverTimeFunction(
 	FName Name,
 	bool bAcumulates,
@@ -45,5 +45,5 @@ FTimerHandle UOverTimeFunctionLibrary::StartOverTimeFunction(
 	//TimerHandle = GetWorld()->GetTimerManager().SetTimer(TimerHandle, )
 
 	
-
 }
+	*/

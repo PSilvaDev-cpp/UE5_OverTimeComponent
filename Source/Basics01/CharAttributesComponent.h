@@ -36,16 +36,18 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-	void IncreaseFloatAttribute(float& Attribute, float Value, float Min, float Max);
+	void IncreaseFloatAttribute(float& Attribute, float Value, float Max);
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-	void DecreaseFloatAttribute(float& Attribute, float Value, float Min, float Max);
+	void DecreaseFloatAttribute(float& Attribute, float Value, float Max);
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-	void IncreaseIntAttribute(int32& Attribute, int Value, int32 Min, int32 Max);
+	void IncreaseIntAttribute(int32& Attribute, int Value, int32 Max);
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-	void DecreaseIntAttribute(int32& Attribute, int Value, int32 Min, int32 Max);
+	void DecreaseIntAttribute(int32& Attribute, int Value, int32 Max);
 
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	FCharAttributesStructure& GetCharAttributes();
 
 };

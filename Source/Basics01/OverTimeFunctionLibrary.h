@@ -15,7 +15,7 @@ class BASICS01_API UOverTimeFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	
-
+/*
 	FTimerHandle StartOverTimeFunction(
 		FName Name,
 		bool bAcumulates,
@@ -26,5 +26,6 @@ class BASICS01_API UOverTimeFunctionLibrary : public UBlueprintFunctionLibrary
 		bool Replace,
 		bool CallOnEndOnReplace
 	);
-
+*/
 };
+

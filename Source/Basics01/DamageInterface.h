@@ -23,9 +23,19 @@ class BASICS01_API IDamageInterface
 public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
-	void OnTakeDamage(float DamageAmount, bool OverTime, float Duration);
+	void OnTakeDamage(float Damage, bool OverTime,
+		FName Name,
+		bool bAcumulates,
+		float Interval,
+		float Duration,
+		bool Replace);
 
-	virtual void OnTakeDamage_Implementation(float DamageAmount, bool OverTime, float Duration)
+	virtual void OnTakeDamage_Implementation(float Damage, bool OT,
+		FName Name,
+		bool bAcumulates,
+		float Interval,
+		float Duration,
+		bool Replace)
 	{
 		// Default implementation (can be empty)
 	}

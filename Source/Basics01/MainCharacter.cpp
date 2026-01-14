@@ -3,8 +3,10 @@
 
 #include "MainCharacter.h"
 
+//UE_LOG(LogTemp, Warning, TEXT(""));
 
 class UCharAttributesComponent;
+class UAbilitySystemComponent;
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -13,7 +15,11 @@ AMainCharacter::AMainCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	CharAttributes = CreateDefaultSubobject<UCharAttributesComponent>(TEXT("CharAttributes"));
-	OverTimeComponent = CreateDefaultSubobject<UOverTimeComponent>(TEXT("OverTimeComponent"));
+	//OverTimeComponent = CreateDefaultSubobject<UOverTimeComponent>(TEXT("OverTimeComponent"));
+
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 }
 
@@ -38,48 +44,117 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-void AMainCharacter::OnTakeDamage_Implementation(float DamageAmount, bool OverTime, float Duration)
+void AMainCharacter::TakeDamage(float Damage)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Take Damage Called"));
+	CharAttributes->DecreaseFloatAttribute(CharAttributes->GetCharAttributes().Health, Damage, CharAttributes->GetCharAttributes().MaxHealth);
+}
 
-	if (!CharAttributes) { return; }
-
-	UE_LOG(LogTemp, Warning, TEXT("CharAttributeIsValid"));
-
-	if (OverTime && OverTimeComponent)
+void AMainCharacter::CountDownTimer(FTimerHandle& TimerHandle, float Duration, float Start)
+{
+	if (!GetWorld())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OTDamage"));
+		return;
+	}
+	float ElapsedTime = GetWorld()->GetTimeSeconds() - Start;
+	if(ElapsedTime >= Duration)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+		return;
+	}
+}
 
-		int32 TimerID = OverTimeComponent->StartOverTime(
-			TEXT("DamageOverTime"),
-			false,
-			1,
-			1.0f,
-			Duration,
-			[this, DamageAmount]()
-			{
-				CharAttributes->DecreaseFloatAttribute(CharAttributes->Attributes.Health, DamageAmount, 0.f, CharAttributes->Attributes.MaxHealth);
-			},
-			nullptr,
-			true,
-			false
-		);
+void AMainCharacter::OnTakeDamage_Implementation(float Damage, bool OverTime,
+	FName Name,
+	bool bAcumulates,
+	float Interval,
+	float Duration,
+	bool Replace)
+{
 
-		if(TimerID != -1)
+	float StartTime = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.f;
+	float ElapsedTime = 0.f;
+
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindLambda([this, Damage, Name, Duration, StartTime]()
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Started DoT with ID: %d"), TimerID);
+			TakeDamage(Damage);
+			CountDownTimer(ActiveTimers[Name], Duration, StartTime);
+		});
+	FTimerHandle TimerHandle;
+
+	if (!IsValid(this) or !CharAttributes or !GetWorld())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("On Take Damage Called but FAILED"));
+		return;
+	}
+	
+	if (OverTime)
+	{
+		if(ActiveTimers.Contains(Name))
+		{	
+			if (FTimerHandle* FoundHandle = ActiveTimers.Find(Name))
+			{
+				GetWorld()->GetTimerManager().ClearTimer(*FoundHandle);
+			}
+			GetWorld()->GetTimerManager().SetTimer(
+				TimerHandle,
+				TimerDelegate,
+				1.f,
+				true);
+			ActiveTimers.Add(Name, TimerHandle);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to start DoT"));
+			TakeDamage(Damage);
+			GetWorld()->GetTimerManager().SetTimer(
+				TimerHandle,
+				TimerDelegate,
+				1.f,
+				true);		
+			ActiveTimers.Add(Name, TimerHandle);
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SingleDamage"));
-		CharAttributes->DecreaseFloatAttribute(CharAttributes->Attributes.Health, DamageAmount, 0.f, CharAttributes->Attributes.MaxHealth);
+		TakeDamage(Damage);
+	}
+}
+
+
+
+void AMainCharacter::InitializeAbilities()
+{
+	if(!HasAuthority() || !AbilitySystemComponent)
+	{
+		return;
 	}
 
+	AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(UGA_SphereScan::StaticClass(), 1, 0));
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+}
+
+void AMainCharacter::OnRep_PlayerState()
+{
+	if(AbilitySystemComponent)
+	{
+		InitializeAbilities();
+	}
+}
+
+void AMainCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if(AbilitySystemComponent)
+	{
+		InitializeAbilities();
+	}
+}
+
+UAbilitySystemComponent* AMainCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 

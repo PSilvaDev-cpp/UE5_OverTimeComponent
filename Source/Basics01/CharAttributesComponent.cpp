@@ -32,22 +32,28 @@ void UCharAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void UCharAttributesComponent::DecreaseFloatAttribute(float& Attribute, float Value, float Min, float Max)
+
+FCharAttributesStructure& UCharAttributesComponent::GetCharAttributes()
 {
-	Attribute = AttributesMath::FloatDecreaseValue(Attribute, Value, Min, Max);
+	return Attributes;
 }
 
-void UCharAttributesComponent::IncreaseFloatAttribute(float& Attribute, float Value, float Min, float Max)
+void UCharAttributesComponent::DecreaseFloatAttribute(float& Attribute, float Value, float Max)
 {
-	Attribute = AttributesMath::FloatIncreaseValue(Attribute, Value, Min, Max);
+	Attribute = AttributesMath::FloatDecreaseValue(Attribute, Value, 0.f, Max);
 }
 
-void UCharAttributesComponent::DecreaseIntAttribute(int32& Attribute, int Value, int32 Min, int32 Max)
+void UCharAttributesComponent::IncreaseFloatAttribute(float& Attribute, float Value, float Max)
 {
-	Attribute = AttributesMath::IntDecreaseValue(Attribute, Value, Min, Max);
+	Attribute = AttributesMath::FloatIncreaseValue(Attribute, Value, 0.f, Max);
 }
 
-void UCharAttributesComponent::IncreaseIntAttribute(int32& Attribute, int Value, int32 Min, int32 Max)
+void UCharAttributesComponent::DecreaseIntAttribute(int32& Attribute, int Value, int32 Max)
 {
-	Attribute = AttributesMath::IntIncreaseValue(Attribute, Value, Min, Max);
+	Attribute = AttributesMath::IntDecreaseValue(Attribute, Value, 0, Max);
+}
+
+void UCharAttributesComponent::IncreaseIntAttribute(int32& Attribute, int Value, int32 Max)
+{
+	Attribute = AttributesMath::IntIncreaseValue(Attribute, Value, 0, Max);
 }
