@@ -71,4 +71,6 @@ public:
 
 	void InitializeAbilities();
 
+	void ActiveSkill(TSubclassOf<UGA_AbilityBase>);
+
 };

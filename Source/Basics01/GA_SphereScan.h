@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GA_AbilityBase.h"
+#include "GE_SphereScan_CD.h"
+#include "AbilitySystemComponent.h"
 #include "GA_SphereScan.generated.h"
 
 /**
@@ -23,4 +25,9 @@ protected:
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData) override;
+
+public:
+
+
+
 };

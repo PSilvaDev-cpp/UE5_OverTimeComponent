@@ -157,4 +157,10 @@ UAbilitySystemComponent* AMainCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-
+void AMainCharacter::ActiveSkill(TSubclassOf<UGA_AbilityBase> AbilityClass) 
+{
+	if (!AbilitySystemComponent || !AbilityClass) { return; }
+	{
+		AbilitySystemComponent->TryActivateAbilityByClass(AbilityClass);
+	}
+}

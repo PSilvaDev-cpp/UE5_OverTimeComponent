@@ -44,11 +44,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
 	UInputAction* IA_Sprint;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Action")
+	UInputAction* IA_QSkill;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Input|Actions")
 	bool bIsSprinting;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void ActivateQSkill(const FInputActionValue& Value);
 
 	void OnStartJump(const FInputActionValue& Value);
 	void OnStopJump(const FInputActionValue& Value);

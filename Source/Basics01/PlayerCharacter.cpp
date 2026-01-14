@@ -37,6 +37,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			EnhancedInput->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 		}
+		if(IA_QSkill)
+		{
+			EnhancedInput->BindAction(IA_QSkill, ETriggerEvent::Started, this, &APlayerCharacter::ActivateQSkill);
+		}
 	}
 
 }
@@ -67,4 +71,9 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void APlayerCharacter::ActivateQSkill(const FInputActionValue& Value)
+{
+	ActiveSkill(UGA_SphereScan::StaticClass());
 }

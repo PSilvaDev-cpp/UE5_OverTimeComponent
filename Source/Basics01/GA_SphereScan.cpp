@@ -3,11 +3,16 @@
 
 #include "GA_SphereScan.h"
 #include "GameFramework/Character.h"
+
 #include "DrawDebugHelpers.h"
 
 UGA_SphereScan::UGA_SphereScan()
 {
+	CooldownEffectClass = UGE_SphereScan_CD::StaticClass();
 	// Set default values or properties here if needed
+
+	SetupCooldownTags();
+
 }
 
 void UGA_SphereScan::ActivateAbility(
@@ -16,7 +21,15 @@ void UGA_SphereScan::ActivateAbility(
 	const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
-	Super::UGA_AbilityBase::CommitOrCancel(Handle, ActorInfo, ActivationInfo);
+	if (!CommitOrCancel(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		return;
+	}
+
+
+
+	
 
 	if(!ActorInfo || !ActorInfo->AvatarActor.IsValid())
 	{
@@ -76,3 +89,4 @@ void UGA_SphereScan::ActivateAbility(
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
+
